@@ -125,7 +125,7 @@ export default function Home() {
           <strong className="text-red-500">Left</strong> to swipe, <strong className="text-red-500">right</strong> to open the jam feed!
         </h1>
       </div>
-      <Link href={"https://itch.io/jam/gmtk-2024/rate/2913403"} target="_blank" rel="noopener noreferrer">
+      <Link href={"https://github.com/DeanDoesDev/tinder-for-jams"} target="_blank" rel="noopener noreferrer">
         <div className="bg-zinc-700 p-3 rounded-full mb-3 transition-transform transform hover:scale-110 hover:bg-zinc-600">
           <h1 className="text-zinc-200 text-sm font-bold flex items-center">See Github repo <GitBranch className="ml-1 w-4 h-4"/></h1>
         </div>
