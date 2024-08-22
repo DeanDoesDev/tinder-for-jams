@@ -122,7 +122,7 @@ export default function Home() {
       </div>
       <div className="flex mt-5">
         <h1 className="text-white text-md text-center px-4 mb-5">
-          <strong className="text-red-500">Left</strong> to swipe, <strong className="text-red-500">right</strong> to open the jam's feed!
+          <strong className="text-red-500">Left</strong> to swipe, <strong className="text-red-500">right</strong> to open the jam feed!
         </h1>
       </div>
     </div>
