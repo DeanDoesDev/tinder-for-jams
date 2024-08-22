@@ -77,7 +77,9 @@ export default function Home() {
         opacity: 0,
         onRest: () => {
           if (direction === "right") {
-            window.open(lowRatingGames[currentIndex].url, "_blank")
+            setTimeout(() => {
+              window.location.href = lowRatingGames[currentIndex].url
+            }, 300)
           }
           setCurrentIndex((prevIndex) => (prevIndex + 1) % lowRatingGames.length) 
           api.start({ x: 0, y: 0, rotate: 0, opacity: 1 }) 

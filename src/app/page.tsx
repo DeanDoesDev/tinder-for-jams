@@ -1,5 +1,3 @@
-"use client" 
-
 import { useState } from "react" 
 import { useSpring, animated } from "@react-spring/web" 
 import { useDrag } from "@use-gesture/react" 
@@ -8,11 +6,11 @@ import { Button } from "@/components/ui/button"
 import { GitBranch, Link2 } from "lucide-react" 
 
 type GameJam = {
-  title: string
-  cover: string
-  url: string
-  short_text: string | null
-  gamejam_link: string
+  title: string 
+  cover: string 
+  url: string 
+  short_text: string | null 
+  gamejam_link: string 
 } 
 
 const gameJams: GameJam[] = [
@@ -23,17 +21,16 @@ const gameJams: GameJam[] = [
     short_text: "One of the biggest game jams ever, filled with amazing talent hosted by Mark Brown.",
     gamejam_link: "https://itch.io/jam/gmtk-2024",
   },
-]
+] 
 
 export default function Home() {
-  const [currentIndex, setCurrentIndex] = useState(0)
-
+  const [currentIndex, setCurrentIndex] = useState(0) 
   const [springProps, api] = useSpring(() => ({
     x: 0,
     y: 0,
     rotate: 0,
     opacity: 1,
-  }))
+  })) 
 
   const handleSwipe = (direction: string) => {
     if (direction === "left" || direction === "right") {
@@ -43,10 +40,10 @@ export default function Home() {
         opacity: 0,
         onRest: () => {
           if (direction === "right") {
-            window.open(gameJams[currentIndex].url, "_blank")
+            window.location.href = gameJams[currentIndex].url  // Navigate directly
           }
-          setCurrentIndex((prevIndex) => (prevIndex + 1) % gameJams.length)
-          api.start({ x: 0, y: 0, rotate: 0, opacity: 1 })
+          setCurrentIndex((prevIndex) => (prevIndex + 1) % gameJams.length) 
+          api.start({ x: 0, y: 0, rotate: 0, opacity: 1 }) 
         },
       }) 
     }
@@ -54,22 +51,22 @@ export default function Home() {
 
   const bind = useDrag(
     ({ down, movement: [mx, my], direction: [xDir], velocity }) => {
-      const trigger = velocity[0] > 0.2
-      const dir = xDir < 0 ? "left" : "right"
+      const trigger = velocity[0] > 0.2 
+      const dir = xDir < 0 ? "left" : "right" 
       if (!down && trigger) {
-        handleSwipe(dir)
+        handleSwipe(dir) 
       } else {
         api.start({
           x: down ? mx : 0,
           y: down ? my : 0,
           rotate: down ? (mx / window.innerWidth) * 15 : 0,
           opacity: down ? 0.8 : 1,
-        })
+        }) 
       }
     }
-  )
+  ) 
 
-  const currentGameJam = gameJams[currentIndex]
+  const currentGameJam = gameJams[currentIndex] 
 
   return (
     <div className="min-h-screen bg-zinc-800 flex flex-col items-center justify-center">
@@ -131,5 +128,5 @@ export default function Home() {
         </div>
       </Link>
     </div>
-  )
+  ) 
 }
