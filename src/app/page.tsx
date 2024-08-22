@@ -5,7 +5,7 @@ import { useSpring, animated } from "@react-spring/web"
 import { useDrag } from "@use-gesture/react" 
 import Link from "next/link" 
 import { Button } from "@/components/ui/button" 
-import { Link2 } from "lucide-react" 
+import { GitBranch, Link2 } from "lucide-react" 
 
 type GameJam = {
   title: string
@@ -73,7 +73,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-zinc-800 flex flex-col items-center justify-center">
-      <Link href={"https://itch.io/jam/gmtk-2024/rate/2913403"}>
+      <Link href={"https://itch.io/jam/gmtk-2024/rate/2913403"} target="_blank" rel="noopener noreferrer">
         <div className="bg-red-500 p-3 rounded-full mb-3 transition-transform transform hover:scale-110 hover:bg-red-500">
           <h1 className="text-red-200 text-sm font-bold flex items-center">DeanDoesDev presents:</h1>
         </div>
@@ -82,7 +82,7 @@ export default function Home() {
         The Tinder for game jams!
       </h1>
       <h1 className="text-white text-md text-center px-4 mb-5">
-        This tool shows you a feed of game jams with a number of ratings below the median!
+        This tool shows you a feed of game jams with a number of ratings below 40!
       </h1>
       <div className="relative">
         <animated.div
@@ -121,10 +121,15 @@ export default function Home() {
         </animated.div>
       </div>
       <div className="flex mt-5">
-        <h1 className="text-white text-md text-center px-4 mb-5">
+        <h1 className="text-white text-md text-center px-4 mb-3">
           <strong className="text-red-500">Left</strong> to swipe, <strong className="text-red-500">right</strong> to open the jam feed!
         </h1>
       </div>
+      <Link href={"https://itch.io/jam/gmtk-2024/rate/2913403"} target="_blank" rel="noopener noreferrer">
+        <div className="bg-zinc-700 p-3 rounded-full mb-3 transition-transform transform hover:scale-110 hover:bg-zinc-600">
+          <h1 className="text-zinc-200 text-sm font-bold flex items-center">See Github repo <GitBranch className="ml-1 w-4 h-4"/></h1>
+        </div>
+      </Link>
     </div>
   )
 }

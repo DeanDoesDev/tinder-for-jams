@@ -123,7 +123,7 @@ export default function Home() {
   
   return (
     <div className="min-h-screen bg-zinc-800 flex flex-col items-center justify-center">
-      <Link href={"https://itch.io/jam/gmtk-2024"}>
+      <Link href={"https://itch.io/jam/gmtk-2024"} target="_blank" rel="noopener noreferrer">
         <Button className="bg-red-500 p-3 rounded-full mb-2 mt-2 transition-transform transform hover:scale-110 hover:bg-red-500 flex items-center">
           Link to the jam <Link2 className="h-4 w-4 ml-1"/>
         </Button>
