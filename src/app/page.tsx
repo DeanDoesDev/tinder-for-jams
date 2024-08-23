@@ -81,7 +81,7 @@ export default function Home() {
         Adopt a Jam
       </h1>
       <h1 className="text-white text-md text-center px-4 mb-5">
-        This tool shows you a feed of game jams games who weren't super fortunate with ratings!
+        This tool shows you a feed of game jams games who weren&rsquo;t super fortunate with ratings!
       </h1>
       <div className="relative">
         <animated.div
