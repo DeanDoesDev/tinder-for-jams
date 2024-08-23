@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react" 
+import { useEffect, useState } from "react" 
 import { useSpring, animated } from "@react-spring/web" 
 import { useDrag } from "@use-gesture/react" 
 import Link from "next/link" 
 import { Button } from "@/components/ui/button" 
 import { GitBranch, Link2 } from "lucide-react" 
+import { useRouter } from 'next/navigation';
 
 type GameJam = {
   title: string 
@@ -13,15 +14,33 @@ type GameJam = {
   url: string 
   short_text: string | null 
   gamejam_link: string 
+  json_link: string
 } 
 
 const gameJams: GameJam[] = [
   {
     title: "GMTK Game Jam 2024",
-    cover: "/gmtk2024-logo.png",
-    url: "/gmtk",
+    cover: "/gmtk.JPG",
+    url: "/jam",
     short_text: "One of the biggest game jams ever, filled with amazing talent hosted by Mark Brown.",
     gamejam_link: "https://itch.io/jam/gmtk-2024",
+    json_link: "https://itch.io/jam/379683/entries.json",
+  },
+  {
+    title: "DISCORD JAM #8",
+    cover: "/discordjam.JPG",
+    url: "/jam",
+    short_text: "A 48 hour weekend game jam with prizes and giveaways leading up to the event!",
+    gamejam_link: "https://itch.io/jam/discord-jam-8",
+    json_link: "https://itch.io/jam/389033/entries.json",
+  },
+  {
+    title: "Mini Jam 165: Paint",
+    cover: "/minijam.JPG",
+    url: "/jam",
+    short_text: "Mini jam is a 72-hour-long game development jam that occurs every two weeks on Itch.io.",
+    gamejam_link: "https://itch.io/jam/mini-jam-165-paint",
+    json_link: "https://itch.io/jam/390246/entries.json",
   },
 ] 
 
@@ -42,7 +61,9 @@ export default function Home() {
         opacity: 0,
         onRest: () => {
           if (direction === "right") {
-            window.location.href = gameJams[currentIndex].url  // Navigate directly
+            const gameData = gameJams[currentIndex];
+            const urlWithParams = `${gameData.url}?title=${encodeURIComponent(gameData.title)}&json_link=${encodeURIComponent(gameData.json_link)}&gamejam_link=${encodeURIComponent(gameData.gamejam_link)}`;
+            window.location.href = urlWithParams;
           }
           setCurrentIndex((prevIndex) => (prevIndex + 1) % gameJams.length) 
           api.start({ x: 0, y: 0, rotate: 0, opacity: 1 }) 

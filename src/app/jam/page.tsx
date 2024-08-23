@@ -6,6 +6,7 @@ import { useDrag } from "@use-gesture/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Link2 } from "lucide-react"
+import { useSearchParams } from 'next/navigation';
 
 type Game = {
   title: string
@@ -15,34 +16,43 @@ type Game = {
   short_text: string | null
 }
 
-async function fetchLowRatingGames(): Promise<Game[]> {
+async function fetchLowRatingGames(apiUrl: string): Promise<Game[]> {
   try {
-    const response = await fetch('/api/data')
+    const response = await fetch(`/api/data?url=${encodeURIComponent(apiUrl)}`)
     if (!response.ok) {
       throw new Error('Network response was not ok')
     }
     const data: Game[] = await response.json()
-
-    return data.sort(() => Math.random() - 0.5)
+    return data
   } catch (error) {
     console.error('Error fetching data:', error)
     return []
   }
 }
 
-function calculateMedian(values: number[]): number {
-  if (values.length === 0) return 0
+function calculateAverageRating(values: number[]): number {
+  if (values.length === 0) return 0;
 
-  values.sort((a, b) => a - b)
-
-  const mid = Math.floor(values.length / 2)
-
-  return values.length % 2 === 0
-    ? (values[mid - 1] + values[mid]) / 2
-    : values[mid]
+  const total = values.reduce((sum, value) => sum + value, 0);
+  return total / values.length;
 }
 
+
 export default function Home() {
+  const searchParams = useSearchParams();
+  const [averageRating, setAverageRating] = useState<number | null>(null);
+
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    return array
+      .map((value, index) => ({ value, index }))
+      .sort(() => Math.random() - 0.5)
+      .map(({ value }) => value);
+  };
+
+  const title = searchParams.get('title');
+  const json_link = searchParams.get('json_link') as string | null;
+  const gamejam_link = searchParams.get('gamejam_link') as string | null;
+
   const [lowRatingGames, setLowRatingGames] = useState<Game[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [medianRating, setMedianRating] = useState<number>(0)
@@ -57,12 +67,21 @@ export default function Home() {
 
   useEffect(() => {
     async function getGames() {
-      const games = await fetchLowRatingGames()
+      let games: any[] | ((prevState: Game[]) => Game[]) = []
+
+      if (json_link) {
+        games = await fetchLowRatingGames(json_link);
+      } else {
+        console.error('json_link is null');
+      }     
+
+      games = shuffleArray(games);
+      
       setLowRatingGames(games)
 
       const ratingCounts = games.map(game => game.rating_count)
-      const median = calculateMedian(ratingCounts)
-      setMedianRating(median)
+      const average = calculateAverageRating(ratingCounts);
+      setAverageRating(average);
 
       setLoading(false)
     }
@@ -129,13 +148,17 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-zinc-800 flex flex-col items-center justify-center">
-      <Link href={"https://itch.io/jam/gmtk-2024"} target="_blank" rel="noopener noreferrer">
-        <Button className="bg-red-500 p-3 rounded-full mb-2 mt-2 transition-transform transform hover:scale-110 hover:bg-red-500 flex items-center">
-          Link to the jam <Link2 className="h-4 w-4 ml-1"/>
-        </Button>
-      </Link>
+      {gamejam_link ? (
+        <Link href={gamejam_link} target="_blank" rel="noopener noreferrer">
+          <Button className="bg-red-500 p-3 rounded-full mb-2 mt-2 transition-transform transform hover:scale-110 hover:bg-red-500 flex items-center">
+            Link to the jam <Link2 className="h-4 w-4 ml-1" />
+          </Button>
+        </Link>
+      ) : (
+        <p className="text-red-500">Jam link not available.</p>
+      )}
       <h1 className="text-white font-bold text-5xl text-center px-4 mb-1">
-        GMTK Game Jam games!
+        {title}
       </h1>
       <h1 className="text-white text-md text-center px-4 mb-5">
         Make sure to help these games out! These devs are incredibly talented!
@@ -161,7 +184,7 @@ export default function Home() {
           <img
             src={currentGame.cover}
             alt={currentGame.title}
-            className="w-full h-40 object-cover rounded-md mb-4"
+            className="w-full h-58 object-cover rounded-md mb-4"
           />
           <div className=" rounded-lg mb-1">
             <h2 className="text-white text-2xl font-bold text-center p-2">{currentGame.title}</h2>
