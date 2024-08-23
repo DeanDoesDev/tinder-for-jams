@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Tinder For Jams",
+  title: "Adopt a Jam",
   description: "Find and help low rated games in your favorite game jams!",
 };
 

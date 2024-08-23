@@ -78,10 +78,10 @@ export default function Home() {
         </div>
       </Link>
       <h1 className="text-white font-bold text-5xl text-center px-4 mb-1">
-        The Tinder for game jams!
+        Adopt a Jam
       </h1>
       <h1 className="text-white text-md text-center px-4 mb-5">
-        This tool shows you a feed of game jams with a number of ratings below 40!
+        This tool shows you a feed of game jams games who weren't super fortunate with ratings!
       </h1>
       <div className="relative">
         <animated.div
