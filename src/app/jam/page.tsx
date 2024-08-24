@@ -6,6 +6,7 @@ import { useDrag } from "@use-gesture/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Link2 } from "lucide-react"
+import { useSearchParams } from 'next/navigation'  
 
 type Game = {
   title: string
@@ -15,9 +16,9 @@ type Game = {
   short_text: string | null
 }
 
-async function fetchLowRatingGames(): Promise<Game[]> {
+async function fetchLowRatingGames(jsonLink: string): Promise<Game[]> {
   try {
-    const response = await fetch('/api/data')
+    const response = await fetch(`/api/data?json_link=${encodeURIComponent(jsonLink)}`)
     if (!response.ok) {
       throw new Error('Network response was not ok')
     }
@@ -29,17 +30,17 @@ async function fetchLowRatingGames(): Promise<Game[]> {
   }
 }
 
-async function fetchAllGames(): Promise<Game[]> {
+async function fetchAllGames(jsonLink: string): Promise<Game[]> {
   try {
-    const response = await fetch('/api/all-games')
+    const response = await fetch(`/api/all-games?json_link=${encodeURIComponent(jsonLink)}`)  
     if (!response.ok) {
-      throw new Error('Network response was not ok')
+      throw new Error(`Network response was not ok. Status: ${response.status}, ${response.statusText}`)  
     }
-    const data: Game[] = await response.json()
-    return data
+    const data: Game[] = await response.json()  
+    return data  
   } catch (error) {
-    console.error('Error fetching all games:', error)
-    return []
+    console.error('Error fetching all games:', error)  
+    return []  
   }
 }
 
@@ -56,6 +57,14 @@ function calculateMedian(values: number[]): number {
 }
 
 export default function Home() {
+  const searchParams = useSearchParams()  
+
+  const title = searchParams.get('title')  
+  const json_link = searchParams.get('json_link') || ''  
+  console.log('JSON Link:', json_link)  
+
+  const gamejam_link = searchParams.get('gamejam_link')  
+
   const [lowRatingGames, setLowRatingGames] = useState<Game[]>([])
   const [allGames, setAllGames] = useState<Game[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -72,15 +81,18 @@ export default function Home() {
   useEffect(() => {
     async function getGames() {
       try {
-        const lowGames = await fetchLowRatingGames()
+        const lowGames = await fetchLowRatingGames(json_link)
         setLowRatingGames(lowGames)
 
-        const allGames = await fetchAllGames()
+        const allGames = await fetchAllGames(json_link)
         setAllGames(allGames)
 
         const ratingCounts = allGames.map(game => game.rating_count)
+        console.log('Rating counts:', ratingCounts)
+
         const median = calculateMedian(ratingCounts)
         setMedianRating(median)
+        console.log('Calculated median:', median)
 
         setLoading(false)
       } catch (error) {
@@ -155,13 +167,18 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-zinc-800 flex flex-col items-center justify-center">
-      <Link href={"https://itch.io/jam/gmtk-2024"} target="_blank" rel="noopener noreferrer">
-        <Button className="bg-red-500 p-3 rounded-full mb-2 mt-2 transition-transform transform hover:scale-110 hover:bg-red-500 flex items-center font-bold text-red-200 text-md">
-          Link to the jam <Link2 className="h-4 w-4 ml-1"/>
-        </Button>
-      </Link> 
+      {gamejam_link && (
+        <Link href={gamejam_link} target="_blank" rel="noopener noreferrer">
+          <Button className="bg-red-500 p-3 rounded-full mb-2 mt-2 transition-transform transform hover:scale-110 hover:bg-red-500 flex items-center font-bold text-red-200 text-md">
+            Link to the jam <Link2 className="h-4 w-4 ml-1" />
+          </Button>
+        </Link>
+      )}
+      {!gamejam_link && (
+        <p className="text-white text-md text-center">No Game Jam link available.</p>
+      )}
       <h1 className="text-white font-bold text-5xl text-center px-4 mb-1">
-        GMTK Game Jam games!
+        {title || "No Title"}
       </h1>  
       <h1 className="text-white text-md text-center md:px-[670px] px-2 mb-5">
         The current game jam median is at <strong className="text-red-200 bg-red-500 px-2 py-[3px] mx-1 rounded-lg">{medianRating} ratings</strong> per game, help these devs avoid the ranking punishement that comes with being below the median!

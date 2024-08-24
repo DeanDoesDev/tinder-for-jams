@@ -33,6 +33,12 @@ function calculateMedian(values: number[]): number {
     : values[mid] 
 }
 
+function getFilterCount(ratingCount: number): number {
+  if (ratingCount < 100) return 3;
+  if (ratingCount < 1000) return 6;
+  return 10;
+}
+
 async function fetchDataFromAPI(url: string): Promise<Game[]> {
   return new Promise((resolve, reject) => {
     let data: Buffer[] = [] 
@@ -49,8 +55,10 @@ async function fetchDataFromAPI(url: string): Promise<Game[]> {
           const ratingCounts = jsonData.jam_games.map(game => game.rating_count) 
           const medianRating = calculateMedian(ratingCounts) 
 
+          const amount = getFilterCount(ratingCounts.length)
+
           const filteredGames = jsonData.jam_games
-            .filter(game => game.rating_count < medianRating + 10)
+            .filter(game => game.rating_count < medianRating + amount)
             .map(game => ({
               title: game.game.title,
               cover: game.game.cover,
@@ -70,14 +78,17 @@ async function fetchDataFromAPI(url: string): Promise<Game[]> {
   }) 
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const url = 'https://itch.io/jam/379683/entries.json' 
-    const lowRatingGames = await fetchDataFromAPI(url) 
-    return NextResponse.json(lowRatingGames) 
+    const url = new URL(request.url).searchParams.get('json_link')
+    if (!url) {
+      return NextResponse.json({ error: 'JSON link not provided' }, { status: 400 })
+    }
+    const lowRatingGames = await fetchDataFromAPI(url)
+    return NextResponse.json(lowRatingGames)
   } catch (error) {
-    console.error('API Error:', error) 
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred' 
-    return NextResponse.json({ error: errorMessage }, { status: 500 }) 
+    console.error('API Error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }
