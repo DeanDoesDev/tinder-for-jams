@@ -163,8 +163,8 @@ export default function Home() {
       <h1 className="text-white font-bold text-5xl text-center px-4 mb-1">
         GMTK Game Jam games!
       </h1>  
-      <h1 className="text-white text-md text-center px-4 mb-1">
-        The current game jam median is at <strong className="text-red-200 bg-red-500 px-2 py-[3px] mx-1 rounded-lg">{medianRating} ratings</strong> per game, help these devs <br/> avoid the ranking punishement that comes with being below the median!
+      <h1 className="text-white text-md text-center md:px-[670px] px-2 mb-5">
+        The current game jam median is at <strong className="text-red-200 bg-red-500 px-2 py-[3px] mx-1 rounded-lg">{medianRating} ratings</strong> per game, help these devs avoid the ranking punishement that comes with being below the median!
       </h1>
       <div className="relative">
         <animated.div
