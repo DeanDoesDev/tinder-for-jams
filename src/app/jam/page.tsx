@@ -22,10 +22,23 @@ async function fetchLowRatingGames(): Promise<Game[]> {
       throw new Error('Network response was not ok')
     }
     const data: Game[] = await response.json()
-
     return data.sort(() => Math.random() - 0.5)
   } catch (error) {
     console.error('Error fetching data:', error)
+    return []
+  }
+}
+
+async function fetchAllGames(): Promise<Game[]> {
+  try {
+    const response = await fetch('/api/all-games')
+    if (!response.ok) {
+      throw new Error('Network response was not ok')
+    }
+    const data: Game[] = await response.json()
+    return data
+  } catch (error) {
+    console.error('Error fetching all games:', error)
     return []
   }
 }
@@ -44,6 +57,7 @@ function calculateMedian(values: number[]): number {
 
 export default function Home() {
   const [lowRatingGames, setLowRatingGames] = useState<Game[]>([])
+  const [allGames, setAllGames] = useState<Game[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [medianRating, setMedianRating] = useState<number>(0)
   const [loading, setLoading] = useState(true)
@@ -57,18 +71,30 @@ export default function Home() {
 
   useEffect(() => {
     async function getGames() {
-      const games = await fetchLowRatingGames()
-      setLowRatingGames(games)
+      try {
+        const lowGames = await fetchLowRatingGames()
+        setLowRatingGames(lowGames)
 
-      const ratingCounts = games.map(game => game.rating_count)
-      const median = calculateMedian(ratingCounts)
-      setMedianRating(median)
+        const allGames = await fetchAllGames()
+        setAllGames(allGames)
 
-      setLoading(false)
+        const ratingCounts = allGames.map(game => game.rating_count)
+        const median = calculateMedian(ratingCounts)
+        setMedianRating(median)
+
+        setLoading(false)
+      } catch (error) {
+        console.error('Error fetching games:', error)
+        setLoading(false)
+      }
     }
 
     getGames()
   }, [])
+
+  useEffect(() => {
+    console.log(medianRating)
+  }, [medianRating])  
 
   const handleSwipe = (direction: string) => {
     if (direction === "left" || direction === "right") {
@@ -130,15 +156,15 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-zinc-800 flex flex-col items-center justify-center">
       <Link href={"https://itch.io/jam/gmtk-2024"} target="_blank" rel="noopener noreferrer">
-        <Button className="bg-red-500 p-3 rounded-full mb-2 mt-2 transition-transform transform hover:scale-110 hover:bg-red-500 flex items-center">
+        <Button className="bg-red-500 p-3 rounded-full mb-2 mt-2 transition-transform transform hover:scale-110 hover:bg-red-500 flex items-center font-bold text-red-200 text-md">
           Link to the jam <Link2 className="h-4 w-4 ml-1"/>
         </Button>
-      </Link>
+      </Link> 
       <h1 className="text-white font-bold text-5xl text-center px-4 mb-1">
         GMTK Game Jam games!
-      </h1>
-      <h1 className="text-white text-md text-center px-4 mb-5">
-        Make sure to help these games out! These devs are incredibly talented!
+      </h1>  
+      <h1 className="text-white text-md text-center px-4 mb-1">
+        The current game jam median is at <strong className="text-red-200 bg-red-500 px-2 py-[3px] mx-1 rounded-lg">{medianRating} ratings</strong> per game, help these devs <br/> avoid the ranking punishement that comes with being below the median!
       </h1>
       <div className="relative">
         <animated.div
@@ -161,7 +187,7 @@ export default function Home() {
           <img
             src={currentGame.cover}
             alt={currentGame.title}
-            className="w-full h-40 object-cover rounded-md mb-4"
+            className="w-full h-58 object-cover rounded-md mb-4"
           />
           <div className=" rounded-lg mb-1">
             <h2 className="text-white text-2xl font-bold text-center p-2">{currentGame.title}</h2>
@@ -175,10 +201,13 @@ export default function Home() {
         </animated.div>
       </div>
       <div className="flex mt-5">
-        <h1 className="text-white text-md text-center px-4 mb-5">
+        <h1 className="text-white text-md text-center px-4 mb-1">
           <strong className="text-red-500">Left</strong> to swipe, <strong className="text-red-500">right</strong> to open the link to the game!
         </h1>
       </div>
+      <p className="text-red-500 text-xs mb-5">
+        Disclaimer: any games with up to 10 reviews over the median may appear in your feed.
+      </p>
     </div>
   )
 }

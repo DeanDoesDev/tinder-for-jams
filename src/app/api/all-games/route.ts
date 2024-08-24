@@ -15,42 +15,32 @@ interface JsonData {
       title: string 
       cover: string 
       url: string 
-      short_text: string 
+      short_text: string
     } 
     rating_count: number 
   }[] 
-}
-
-function calculateMedian(values: number[]): number {
-  if (values.length === 0) return 0 
-
-  values.sort((a, b) => a - b) 
-
-  const mid = Math.floor(values.length / 2) 
-
-  return values.length % 2 === 0
-    ? (values[mid - 1] + values[mid]) / 2
-    : values[mid] 
 }
 
 async function fetchDataFromAPI(url: string): Promise<Game[]> {
   return new Promise((resolve, reject) => {
     let data: Buffer[] = [] 
 
-    https.get(url, (res) => {
-      res.on('data', (chunk) => {
+    https.get(url, res => {
+      res.on('data', chunk => {
         data.push(chunk) 
       }) 
 
       res.on('end', () => {
         try {
-          const jsonData: JsonData = JSON.parse(Buffer.concat(data).toString()) 
-
-          const ratingCounts = jsonData.jam_games.map(game => game.rating_count) 
-          const medianRating = calculateMedian(ratingCounts) 
-
+          const responseData = Buffer.concat(data).toString()
+          
+          const jsonData: JsonData = JSON.parse(responseData)
+          
+          if (!jsonData.jam_games || !Array.isArray(jsonData.jam_games)) {
+            throw new Error('Invalid JSON structure')
+          }
+          
           const filteredGames = jsonData.jam_games
-            .filter(game => game.rating_count < medianRating + 10)
             .map(game => ({
               title: game.game.title,
               cover: game.game.cover,
@@ -61,10 +51,12 @@ async function fetchDataFromAPI(url: string): Promise<Game[]> {
 
           resolve(filteredGames) 
         } catch (error) {
+          console.error('Failed to parse JSON data:', error)
           reject(new Error('Failed to parse JSON data')) 
         }
       }) 
-    }).on('error', (err) => {
+    }).on('error', err => {
+      console.error('Request error:', err)
       reject(new Error(err.message)) 
     }) 
   }) 
