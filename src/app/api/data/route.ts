@@ -15,7 +15,7 @@ interface JsonData {
       title: string 
       cover: string 
       url: string 
-      short_text: string 
+      short_text: string
     } 
     rating_count: number 
   }[] 
@@ -54,15 +54,9 @@ async function fetchDataFromAPI(url: string): Promise<Game[]> {
   }) 
 }
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url)
-    const url = searchParams.get('url') 
-
-    if (!url) {
-      return NextResponse.json({ error: 'URL parameter is missing' }, { status: 400 }) 
-    }
-
+    const url = 'https://itch.io/jam/379683/entries.json' 
     const lowRatingGames = await fetchDataFromAPI(url) 
     return NextResponse.json(lowRatingGames) 
   } catch (error) {
