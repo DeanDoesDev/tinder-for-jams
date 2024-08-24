@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useSpring, animated } from "@react-spring/web"
 import { useDrag } from "@use-gesture/react"
 import Link from "next/link"
@@ -18,17 +18,18 @@ type Game = {
 
 async function fetchLowRatingGames(apiUrl: string): Promise<Game[]> {
   try {
-    const response = await fetch(`/api/data?url=${encodeURIComponent(apiUrl)}`)
+    const response = await fetch(`/api/data?url=${encodeURIComponent(apiUrl)}`, { method: 'GET' });
     if (!response.ok) {
-      throw new Error('Network response was not ok')
+      throw new Error('Network response was not ok');
     }
-    const data: Game[] = await response.json()
-    return data
+    const data: Game[] = await response.json();
+    return data;
   } catch (error) {
-    console.error('Error fetching data:', error)
-    return []
+    console.error('Error fetching data:', error);
+    return [];
   }
 }
+
 
 function calculateAverageRating(values: number[]): number {
   if (values.length === 0) return 0;
@@ -147,61 +148,63 @@ export default function Home() {
   const currentGame = lowRatingGames[currentIndex]
 
   return (
-    <div className="min-h-screen bg-zinc-800 flex flex-col items-center justify-center">
-      {gamejam_link ? (
-        <Link href={gamejam_link} target="_blank" rel="noopener noreferrer">
-          <Button className="bg-red-500 p-3 rounded-full mb-2 mt-2 transition-transform transform hover:scale-110 hover:bg-red-500 flex items-center">
-            Link to the jam <Link2 className="h-4 w-4 ml-1" />
-          </Button>
-        </Link>
-      ) : (
-        <p className="text-red-500">Jam link not available.</p>
-      )}
-      <h1 className="text-white font-bold text-5xl text-center px-4 mb-1">
-        {title}
-      </h1>
-      <h1 className="text-white text-md text-center px-4 mb-5">
-        Make sure to help these games out! These devs are incredibly talented!
-      </h1>
-      <div className="relative">
-        <animated.div
-          {...bind()}
-          style={{
-            ...springProps,
-            touchAction: "none",
-            backgroundColor: "#4a5568",
-            padding: "16px",
-            borderRadius: "8px",
-            width: "320px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            zIndex: 1,
-            userSelect: "none",
-            WebkitUserSelect: "none",
-          }}
-        >
-          <img
-            src={currentGame.cover}
-            alt={currentGame.title}
-            className="w-full h-58 object-cover rounded-md mb-4"
-          />
-          <div className=" rounded-lg mb-1">
-            <h2 className="text-white text-2xl font-bold text-center p-2">{currentGame.title}</h2>
-          </div>
-          <p className="text-white text-center text-md mb-2">
-            {currentGame.short_text ? currentGame.short_text : "No description available."}
-          </p>
-          <div className="bg-red-500  px-4 py-2 rounded-full mx-2 mt-3 mb-2">
-            <p className="text-red-200 text-md font-bold text-center">Ratings: {currentGame.rating_count}</p>
-          </div>
-        </animated.div>
-      </div>
-      <div className="flex mt-5">
-        <h1 className="text-white text-md text-center px-4 mb-5">
-          <strong className="text-red-500">Left</strong> to swipe, <strong className="text-red-500">right</strong> to open the link to the game!
+    <Suspense fallback={<div>Loading...</div>}>
+      <div className="min-h-screen bg-zinc-800 flex flex-col items-center justify-center">
+        {gamejam_link ? (
+          <Link href={gamejam_link} target="_blank" rel="noopener noreferrer">
+            <Button className="bg-red-500 p-3 rounded-full mb-2 mt-2 transition-transform transform hover:scale-110 hover:bg-red-500 flex items-center">
+              Link to the jam <Link2 className="h-4 w-4 ml-1" />
+            </Button>
+          </Link>
+        ) : (
+          <p className="text-red-500">Jam link not available.</p>
+        )}
+        <h1 className="text-white font-bold text-5xl text-center px-4 mb-1">
+          {title}
         </h1>
+        <h1 className="text-white text-md text-center px-4 mb-5">
+          Make sure to help these games out! These devs are incredibly talented!
+        </h1>
+        <div className="relative">
+          <animated.div
+            {...bind()}
+            style={{
+              ...springProps,
+              touchAction: "none",
+              backgroundColor: "#4a5568",
+              padding: "16px",
+              borderRadius: "8px",
+              width: "320px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              zIndex: 1,
+              userSelect: "none",
+              WebkitUserSelect: "none",
+            }}
+          >
+            <img
+              src={currentGame.cover}
+              alt={currentGame.title}
+              className="w-full h-58 object-cover rounded-md mb-4"
+            />
+            <div className=" rounded-lg mb-1">
+              <h2 className="text-white text-2xl font-bold text-center p-2">{currentGame.title}</h2>
+            </div>
+            <p className="text-white text-center text-md mb-2">
+              {currentGame.short_text ? currentGame.short_text : "No description available."}
+            </p>
+            <div className="bg-red-500  px-4 py-2 rounded-full mx-2 mt-3 mb-2">
+              <p className="text-red-200 text-md font-bold text-center">Ratings: {currentGame.rating_count}</p>
+            </div>
+          </animated.div>
+        </div>
+        <div className="flex mt-5">
+          <h1 className="text-white text-md text-center px-4 mb-5">
+            <strong className="text-red-500">Left</strong> to swipe, <strong className="text-red-500">right</strong> to open the link to the game!
+          </h1>
+        </div>
       </div>
-    </div>
+    </Suspense>
   )
 }
