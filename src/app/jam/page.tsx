@@ -205,7 +205,7 @@ export default function Home() {
           <strong className="text-red-500">Left</strong> to swipe, <strong className="text-red-500">right</strong> to open the link to the game!
         </h1>
       </div>
-      <p className="text-red-500 text-xs mb-5">
+      <p className="text-red-500 text-xs mb-5 text-center px-2">
         Disclaimer: any games with up to 10 reviews over the median may appear in your feed.
       </p>
     </div>
