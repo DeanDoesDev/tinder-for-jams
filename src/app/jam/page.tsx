@@ -7,6 +7,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Link2 } from "lucide-react"
 import { useSearchParams } from 'next/navigation'  
+import { Header } from "@/components/header"
 
 type Game = {
   title: string
@@ -167,6 +168,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-zinc-800 flex flex-col items-center justify-center">
+      <div className="fixed top-0 w-full z-50 flex items-center justify-center mt-3 xs:mt-1 sm:mt-3 md:mt-3 lg:mt-4 xl:mt-6">
+        <Header />
+      </div>
       {gamejam_link && (
         <Link href={gamejam_link} target="_blank" rel="noopener noreferrer">
           <Button className="bg-red-500 p-3 rounded-full mb-2 mt-2 transition-transform transform hover:scale-110 hover:bg-red-500 flex items-center font-bold text-red-200 text-md">
